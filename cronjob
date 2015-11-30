@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /home/jubileu/git/personal/best-r-jokes 
+python2 main.py
