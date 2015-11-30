@@ -7,16 +7,16 @@ import subprocess
 # originally used to store secret keys
 #~ import secrets
 
+
+# set to true when testing without tweeting/commiting
 TESTING = False
+
 HIGH_SCORE = 300
 TWITTER_LIMIT = 140
 TWEET_SUCCESS = 0
 
-# database
-# open jokes_db
-# create table submissions(id text, url text);
-
-PATH_TO_DB = "home/jubileu/git/personal/best-r-jokes/jokes_db"
+# database initialization
+# sqlite> create table submissions(id text, url text);
 DB = sqlite3.connect("./jokes_db")
 CURSOR = DB.cursor()
 
@@ -31,9 +31,6 @@ def id_in_db(post_id):
 
 
 def save_in_db(post_id, post_url):
-	if TESTING:
-		return
-	
 	CURSOR.execute("insert into submissions values('%s', '%s')"
 		% (post_id, post_url))
 
@@ -98,7 +95,8 @@ def main():
 		if tweet(twitter_text) != TWEET_SUCCESS:
 			save_in_db(post_id, get_url(post_id))
 
-	DB.commit()
+	if not TESTING:
+		DB.commit()
 
 if __name__ == "__main__":
 	main()
