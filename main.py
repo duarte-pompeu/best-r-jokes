@@ -7,8 +7,10 @@ import subprocess
 # originally used to store secret keys
 #~ import secrets
 
-HIGH_SCORE = 1000
+TESTING = False
+HIGH_SCORE = 300
 TWITTER_LIMIT = 140
+TWEET_SUCCESS = 0
 
 # database
 # open jokes_db
@@ -29,12 +31,15 @@ def id_in_db(post_id):
 
 
 def save_in_db(post_id, post_url):
-	CURSOR.execute("insert into submissions values('%s', '%s')" 
+	if TESTING:
+		return
+	
+	CURSOR.execute("insert into submissions values('%s', '%s')"
 		% (post_id, post_url))
 
 
 def get_url(post_id):
-	return "https://www.reddit.com/r/Jokes/comments/" + post_id
+	return "reddit.com/r/Jokes/" + post_id
 
 
 def format_twitter_all(post_id, title, text):
@@ -51,7 +56,12 @@ def format_twitter_url(post_id):
 
 def tweet(tweet_text):
 	print "TWEETING: %s" % tweet_text
-	subprocess.call(["twitter", "set", tweet_text])
+	
+	if not TESTING:
+		return subprocess.call(["twitter", "set", tweet_text])
+	
+	else:
+		return 0
 
 
 def main():
@@ -78,15 +88,15 @@ def main():
 
 		if len(twitter_text) > TWITTER_LIMIT:
 			continue
-			
+
 			# TODO: we can shorten tweets by using titles+urls/urls only
 			#~ twitter_text = format_twitter_title(post_id, title)
 
 		#~ if len(twitter_text) > TWITTER_LIMIT:
 			#~ twitter_text = format_twitter_url(post_id)
 
-		save_in_db(post_id, get_url(post_id))
-		tweet(twitter_text)
+		if tweet(twitter_text) != TWEET_SUCCESS:
+			save_in_db(post_id, get_url(post_id))
 
 	DB.commit()
 
