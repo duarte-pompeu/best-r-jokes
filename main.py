@@ -4,16 +4,15 @@ import praw
 import sqlite3
 import subprocess
 
-import secrets
-
-# https://praw.readthedocs.org/en/v3.0.0/pages/writing_a_bot.html#writing-a-bot
+# originally used to store secret keys
+#~ import secrets
 
 HIGH_SCORE = 1000
 TWITTER_LIMIT = 140
 
 # database
 # open jokes_db
-# create table submissions(id text);
+# create table submissions(id text, url text);
 
 PATH_TO_DB = "home/jubileu/git/personal/best-r-jokes/jokes_db"
 DB = sqlite3.connect("./jokes_db")
@@ -29,8 +28,9 @@ def id_in_db(post_id):
 		return False
 
 
-def save_in_db(post_id):
-	CURSOR.execute("insert into submissions values('%s')" % post_id)
+def save_in_db(post_id, post_url):
+	CURSOR.execute("insert into submissions values('%s', '%s')" 
+		% (post_id, post_url))
 
 
 def get_url(post_id):
@@ -55,6 +55,7 @@ def tweet(tweet_text):
 
 
 def main():
+	# https://praw.readthedocs.org/en/v3.0.0/pages/writing_a_bot.html#writing-a-bot
 	r = praw.Reddit('PRAW related-question monitor by /u/_Daimon_ v 1.0. '
 		'Url: https://praw.readthedocs.org/en/latest/'
 		'pages/writing_a_bot.html')
@@ -84,7 +85,7 @@ def main():
 		#~ if len(twitter_text) > TWITTER_LIMIT:
 			#~ twitter_text = format_twitter_url(post_id)
 
-		save_in_db(post_id)
+		save_in_db(post_id, get_url(post_id))
 		tweet(twitter_text)
 
 	DB.commit()
