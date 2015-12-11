@@ -13,7 +13,6 @@ TESTING = False
 
 HIGH_SCORE = 300
 TWITTER_LIMIT = 140
-TWEET_SUCCESS = 0
 
 # database initialization
 # sqlite> create table submissions(id text, url text);
@@ -69,7 +68,7 @@ def main():
 
 	subreddit = r.get_subreddit('jokes')
 
-	for submission in subreddit.get_hot(limit=10):
+	for submission in subreddit.get_hot(limit=20):
 		title = submission.title
 		post_id = submission.id
 		score = submission.score
@@ -92,7 +91,7 @@ def main():
 		#~ if len(twitter_text) > TWITTER_LIMIT:
 			#~ twitter_text = format_twitter_url(post_id)
 
-		if tweet(twitter_text) != TWEET_SUCCESS:
+		if tweet(twitter_text):
 			save_in_db(post_id, get_url(post_id))
 
 	if not TESTING:
