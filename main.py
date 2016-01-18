@@ -11,7 +11,7 @@ import subprocess
 # set to true when testing without tweeting/commiting
 TESTING = False
 
-HIGH_SCORE = 300
+HIGH_SCORE = 500
 TWITTER_LIMIT = 140
 
 # database initialization
