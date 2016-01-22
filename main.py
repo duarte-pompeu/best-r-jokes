@@ -9,6 +9,7 @@ import subprocess
 
 
 # set to true when testing without tweeting/commiting
+LOGGER = True
 TESTING = False
 
 HIGH_SCORE = 500
@@ -18,6 +19,10 @@ TWITTER_LIMIT = 140
 # sqlite> create table submissions(id text, url text);
 DB = sqlite3.connect("./jokes_db")
 CURSOR = DB.cursor()
+
+def log(msg):
+	if LOGGER:
+		print msg
 
 def id_in_db(post_id):
 	CURSOR.execute("select id from submissions where id='%s'" % post_id)
@@ -30,8 +35,10 @@ def id_in_db(post_id):
 
 
 def save_in_db(post_id, post_url):
-	CURSOR.execute("insert into submissions values('%s', '%s')"
-		% (post_id, post_url))
+	sql = "insert into submissions values('%s', '%s')" \
+		% (post_id, post_url)
+	log("SQL: " + sql)
+	CURSOR.execute(sql)
 
 
 def get_url(post_id):
@@ -51,7 +58,7 @@ def format_twitter_url(post_id):
 
 
 def tweet(tweet_text):
-	print "TWEETING: %s" % tweet_text
+	print ("TWEETING: " + tweet_text).encode('utf-8')
 	
 	if not TESTING:
 		return subprocess.call(["twitter", "set", tweet_text])
@@ -77,6 +84,7 @@ def main():
 			continue
 
 		if id_in_db(post_id):
+			log(str(post_id) + " already in db.") 
 			continue
 			#~ pass
 
@@ -84,12 +92,6 @@ def main():
 
 		if len(twitter_text) > TWITTER_LIMIT:
 			continue
-
-			# TODO: we can shorten tweets by using titles+urls/urls only
-			#~ twitter_text = format_twitter_title(post_id, title)
-
-		#~ if len(twitter_text) > TWITTER_LIMIT:
-			#~ twitter_text = format_twitter_url(post_id)
 
 		if tweet(twitter_text):
 			save_in_db(post_id, get_url(post_id))
