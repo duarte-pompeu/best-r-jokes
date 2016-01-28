@@ -109,7 +109,7 @@ def main():
 
 			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed("https://" + get_url(post_id)):
 				result = feed.add_entry(title, "https://" + get_url(post_id), text)
-				log(result)
+				print result
 
 	if not TESTING:
 		DB.commit()
