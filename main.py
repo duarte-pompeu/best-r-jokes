@@ -40,7 +40,7 @@ def save_in_db(post_id, post_url):
 
 
 def get_url(post_id):
-	return "reddit.com/r/Jokes/" + post_id
+	return "redd.it/" + post_id
 
 
 def format_twitter_all(post_id, title, text):
@@ -57,10 +57,10 @@ def format_twitter_url(post_id):
 
 def tweet(tweet_text):
 	print ("TWEETING: " + tweet_text).encode('utf-8')
-	
+
 	if not TESTING:
 		return subprocess.call([config.twitter_path, "set", tweet_text])
-	
+
 	else:
 		return 0
 
@@ -77,7 +77,7 @@ def main():
 		title = submission.title
 		post_id = submission.id
 		score = submission.score
-		
+
 		log("%s : %d : %s ============" %(title, score, post_id))
 		if score < HIGH_SCORE:
 			log("score too low")
