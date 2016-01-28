@@ -9,7 +9,7 @@ import subprocess
 
 
 # set to true when testing without tweeting/commiting
-LOGGER = True
+LOGGER = False 
 TESTING = False
 
 HIGH_SCORE = 500
@@ -61,7 +61,7 @@ def tweet(tweet_text):
 	print ("TWEETING: " + tweet_text).encode('utf-8')
 	
 	if not TESTING:
-		return subprocess.call(["twitter", "set", tweet_text])
+		return subprocess.call(["/usr/local/bin/twitter", "set", tweet_text])
 	
 	else:
 		return 0
@@ -79,18 +79,21 @@ def main():
 		title = submission.title
 		post_id = submission.id
 		score = submission.score
-
+		
+		log("%s : %d : %s ============" %(title, score, post_id))
 		if score < HIGH_SCORE:
+			log("score too low")
 			continue
 
 		if id_in_db(post_id):
-			log(str(post_id) + " already in db.") 
+			log("already in db")
 			continue
 			#~ pass
 
 		twitter_text = format_twitter_all(post_id, title, submission.selftext)
 
 		if len(twitter_text) > TWITTER_LIMIT:
+			log("text is too long: " + str(len(twitter_text)))
 			continue
 
 		if tweet(twitter_text):

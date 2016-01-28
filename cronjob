@@ -1,5 +1,5 @@
 #!/bin/sh
 
-cd /home/jubileu/git/personal/best-r-jokes 
+cd /home/jubileu/jokes
 echo NEW RECORD ON $(date) >> log.txt
-python2 main.py >> log.txt
+python2 main.py >> log.txt 2>&1
