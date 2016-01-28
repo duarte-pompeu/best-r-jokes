@@ -5,11 +5,13 @@ import sqlite3
 import subprocess
 
 import config
+import feed
 
 # set to true when testing without tweeting/commiting
 LOGGER = config.LOGGER
 TESTING = config.TESTING
 
+LONG_TEXT_MIN_SCORE = 1000
 HIGH_SCORE = 500
 TWITTER_LIMIT = 140
 
@@ -77,10 +79,13 @@ def main():
 
 	subreddit = r.get_subreddit('jokes')
 
+	feed.init()
+
 	for submission in subreddit.get_hot(limit=20):
 		title = submission.title
 		post_id = submission.id
 		score = submission.score
+		text = submission.selftext
 
 		log("%s : %d : %s ============" %(title, score, post_id))
 		if score < HIGH_SCORE:
@@ -94,15 +99,25 @@ def main():
 
 		twitter_text = format_twitter_all(post_id, title, submission.selftext)
 
-		if len(twitter_text) > TWITTER_LIMIT:
-			log("text is too long: " + str(len(twitter_text)))
-			continue
+		if len(twitter_text) < TWITTER_LIMIT:
+			status = tweet(twitter_text)
+			if status:
+				save_in_db(post_id, get_url(post_id))
 
-		if tweet(twitter_text):
-			save_in_db(post_id, get_url(post_id))
+		else:
+			log("text is too long for twitter: " + str(len(twitter_text)))
+
+			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed(get_url(post_id)):
+				result = feed.add_entry(title, "https://" + get_url(post_id), text)
+				log(result)
 
 	if not TESTING:
 		DB.commit()
+
+		result = feed.close()
+		log(result)
+
+
 
 if __name__ == "__main__":
 	main()
