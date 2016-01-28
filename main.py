@@ -107,15 +107,15 @@ def main():
 		else:
 			log("text is too long for twitter: " + str(len(twitter_text)))
 
-			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed(get_url(post_id)):
+			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed("https://" + get_url(post_id)):
 				result = feed.add_entry(title, "https://" + get_url(post_id), text)
 				log(result)
 
 	if not TESTING:
 		DB.commit()
 
-		result = feed.close()
-		log(result)
+	result = feed.close()
+	log(result)
 
 
 
