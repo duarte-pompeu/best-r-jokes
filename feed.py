@@ -24,20 +24,17 @@ def close():
 
 def item_in_feed(url):
 	items = CHANNEL.findall("item")
-	
+
 	for item in items:
 		link = item.find("link").text
-	
-		print link
-		print url
-		
+
 		if link == url:
 			return True
 
-	
-	else: 
+
+	else:
 		return False
-	
+
 
 def add_entry(title, link, text):
 	item = ET.SubElement(CHANNEL, "item")
@@ -56,7 +53,7 @@ def add_entry(title, link, text):
 
 	pd = ET.SubElement(item, "pubDate")
 	pd.text = get_time_stamp()
-	
+
 	return  ET.dump(item)
 
 
