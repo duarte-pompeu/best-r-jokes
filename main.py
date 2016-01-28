@@ -4,13 +4,11 @@ import praw
 import sqlite3
 import subprocess
 
-# originally used to store secret keys
-#~ import secrets
-
+import config
 
 # set to true when testing without tweeting/commiting
-LOGGER = False 
-TESTING = False
+LOGGER = config.LOGGER
+TESTING = config.TESTING
 
 HIGH_SCORE = 500
 TWITTER_LIMIT = 140
@@ -61,7 +59,7 @@ def tweet(tweet_text):
 	print ("TWEETING: " + tweet_text).encode('utf-8')
 	
 	if not TESTING:
-		return subprocess.call(["/usr/local/bin/twitter", "set", tweet_text])
+		return subprocess.call([config.twitter_path, "set", tweet_text])
 	
 	else:
 		return 0

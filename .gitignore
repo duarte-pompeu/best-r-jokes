@@ -1,4 +1,5 @@
-secrets.py
 *.pyc
+secrets.py
+config.py
 jokes_db
 log.txt
