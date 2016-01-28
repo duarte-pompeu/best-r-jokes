@@ -56,11 +56,15 @@ def format_twitter_url(post_id):
 
 
 def tweet(tweet_text):
-	print ("TWEETING: " + tweet_text).encode('utf-8')
+	text = tweet_text.encode('utf-8')
+	print "TWEETING: " + text
 
 	if not TESTING:
-		return subprocess.call([config.twitter_path, "set", tweet_text])
-
+		try:
+			return subprocess.call([config.twitter_path, "set", text])
+		except Exception as e:
+			print str(e)
+			return 0
 	else:
 		return 0
 
