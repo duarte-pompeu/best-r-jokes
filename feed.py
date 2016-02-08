@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+# coding=utf-8
 
 import xml.etree.ElementTree as ET
 from email.Utils import formatdate
@@ -45,9 +46,13 @@ def add_entry(title, link, text):
 	l = ET.SubElement(item, "link")
 	l.text = link
 
+	formatted_text = "";
+	for line in text.decode("utf-8").split("\n"):
+		formatted_text += line + "<br>"
+
 	de = ET.SubElement(item, "description")
-	te = "<p>" + text + "</p>"
-	te += "<a href='" + link + "'>" + "View comments" + "</a>"
+	te = "<p>" + formatted_text + "</p>"
+	te += "<a href='" + link + "'>" + "comments" + "</a>"
 
 	de.text = te
 
@@ -66,7 +71,3 @@ def trim_feed(max_entries):
 
 def get_time_stamp():
 	return formatdate()
-
-if __name__ == "__main__":
-	main()
-

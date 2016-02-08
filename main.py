@@ -1,4 +1,5 @@
 #!/usr/bin/python2
+# coding=utf-8
 
 import praw
 import sqlite3
@@ -116,8 +117,6 @@ def main():
 
 	result = feed.close()
 	log(result)
-
-
 
 if __name__ == "__main__":
 	main()
