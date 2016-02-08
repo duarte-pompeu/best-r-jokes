@@ -47,7 +47,7 @@ def add_entry(title, link, text):
 	l.text = link
 
 	formatted_text = "";
-	for line in text.decode("utf-8").split("\n"):
+	for line in text.split("\n"):
 		formatted_text += line + "<br>"
 
 	de = ET.SubElement(item, "description")

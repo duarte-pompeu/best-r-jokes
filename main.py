@@ -88,7 +88,7 @@ def main():
 		text = submission.selftext
 
 
-		log("%s : %d : %s" %(title, score, post_id))
+		log("%s : %d : %s" %(title, score, get_url(post_id)))
 		if score < HIGH_SCORE:
 			log("*** LOW SCORE")
 
