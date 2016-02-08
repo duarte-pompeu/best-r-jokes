@@ -20,7 +20,8 @@ def close():
 	trim_feed(config.max_feeds)
 	TREE.write(config.feed_path)
 
-	return ET.dump(TREE)
+	# uncomment to debug
+	#~ ET.dump(TREE)
 
 
 def item_in_feed(url):
@@ -31,7 +32,6 @@ def item_in_feed(url):
 
 		if link == url:
 			return True
-
 
 	else:
 		return False
@@ -59,7 +59,8 @@ def add_entry(title, link, text):
 	pd = ET.SubElement(item, "pubDate")
 	pd.text = get_time_stamp()
 
-	return  ET.dump(item)
+	# uncomment to debug
+	#~ ET.dump(item)
 
 
 def trim_feed(max_entries):

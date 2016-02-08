@@ -26,7 +26,7 @@ def log(msg):
 		print msg
 
 def id_in_db(post_id):
-	CURSOR.execute("select id from submissions where id='%s'" % post_id)
+	CURSOR.execute("select id from submissions where id=?", [post_id])
 	result =  CURSOR.fetchone()
 
 	if result:
@@ -36,10 +36,9 @@ def id_in_db(post_id):
 
 
 def save_in_db(post_id, post_url):
-	sql = "insert into submissions values('%s', '%s')" \
-		% (post_id, post_url)
-	log("SQL: " + sql)
-	CURSOR.execute(sql)
+	sql = "insert into submissions values(?, ?)"
+	log("SQL: " + sql + "\n" + post_id + ", " + post_url + "\n")
+	CURSOR.execute(sql, [post_id, post_url])
 
 
 def get_url(post_id):
@@ -88,35 +87,34 @@ def main():
 		score = submission.score
 		text = submission.selftext
 
-		log("%s : %d : %s ============" %(title, score, post_id))
+
+		log("%s : %d : %s" %(title, score, post_id))
 		if score < HIGH_SCORE:
-			log("score too low")
+			log("*** LOW SCORE")
+
 			continue
 
 		if id_in_db(post_id):
-			log("already in db")
+			log("*** ALREADY IN DATABASE")
 			continue
-			#~ pass
 
 		twitter_text = format_twitter_all(post_id, title, submission.selftext)
 
 		if len(twitter_text) < TWITTER_LIMIT:
 			status = tweet(twitter_text)
+
 			if status:
 				save_in_db(post_id, get_url(post_id))
 
 		else:
-			log("text is too long for twitter: " + str(len(twitter_text)))
-
 			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed("https://" + get_url(post_id)):
-				result = feed.add_entry(title, "https://" + get_url(post_id), text)
-				print result
+				feed.add_entry(title, "https://" + get_url(post_id), text)
+				print "NEW RSS FEED ===============\n" + title + " - " + get_url(post_id)
 
 	if not TESTING:
 		DB.commit()
 
-	result = feed.close()
-	log(result)
+	feed.close()
 
 if __name__ == "__main__":
 	main()
