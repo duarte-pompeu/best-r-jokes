@@ -86,8 +86,11 @@ def tweet(tweet_text):
 def publish_facebook(title, text, url):
 	token = secrets.FB_TOKEN
 	api = facebook.GraphAPI(token)
-	msg = title.encode("utf-8") + "\n\n" + text.encode("utf-8") + "\n\n" + url
-	api.put_wall_post(msg)
+	try:
+		msg = title.encode("utf-8") + "\n\n" + text.encode("utf-8") + "\n\n" + url
+		api.put_wall_post(msg)
+	except Exception as e:
+		print str(e)
 
 	return
 
