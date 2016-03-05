@@ -52,7 +52,7 @@ def main():
 
 		twitter_text = format_twitter_all(post_id, title, submission.selftext)
 
-		if len(twitter_text) < TWITTER_LIMIT:
+		if config.POST_TO_TWITTER and len(twitter_text) < TWITTER_LIMIT :
 			status = tweet(twitter_text)
 
 			if status:
@@ -61,9 +61,14 @@ def main():
 		else:
 			url = get_long_url(post_id)
 			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed(url):
-				feed.add_entry(title, url, text)
-				publish_facebook(title, text, url)
-				print "NEW RSS FEED ===============\n" + title + " - " + url
+				
+				if config.POST_TO_RSS:
+					feed.add_entry(title, url, text)
+					print "NEW RSS FEED ===============\n" + title + " - " + url
+				
+				if config.POST_TO_FB:
+					publish_facebook(title, text, url)
+					print "NEW FACEBOOK POST ===============\n" + title + " - " + url
 
 	if not TESTING:
 		DB.commit()
