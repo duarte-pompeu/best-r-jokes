@@ -59,10 +59,11 @@ def main():
 				save_in_db(post_id, get_url(post_id))
 
 		else:
-			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed("https://" + get_url(post_id)):
-				feed.add_entry(title, "https://" + get_long_url(post_id), text)
-				publish_facebook(title, text, "https://" + get_long_url(post_id))
-				print "NEW RSS FEED ===============\n" + title + " - " + get_url(post_id)
+			url = get_long_url(post_id)
+			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed(url):
+				feed.add_entry(title, url, text)
+				publish_facebook(title, text, url)
+				print "NEW RSS FEED ===============\n" + title + " - " + url
 
 	if not TESTING:
 		DB.commit()
