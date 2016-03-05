@@ -60,11 +60,12 @@ def main():
 
 		else:
 			url = get_long_url(post_id)
-			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed(url):
+			https_url = "https://" + url
+			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed(https_url):
 				
 				if config.POST_TO_RSS:
-					feed.add_entry(title, url, text)
-					print "NEW RSS FEED ===============\n" + title + " - " + url
+					feed.add_entry(title, https_url, text)
+					print "NEW RSS FEED ===============\n" + title + " - " + https_url
 				
 				if config.POST_TO_FB:
 					publish_facebook(title, text, url)
