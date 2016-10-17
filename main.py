@@ -4,7 +4,7 @@
 import praw
 import sqlite3
 import subprocess
-import facebook
+import facebook #facebook-sdk from pip
 
 import config
 import feed
@@ -24,6 +24,7 @@ DB = sqlite3.connect("./jokes_db")
 CURSOR = DB.cursor()
 
 def main():
+	setup()
 	# https://praw.readthedocs.org/en/v3.0.0/pages/writing_a_bot.html#writing-a-bot
 	r = praw.Reddit('PRAW related-question monitor by /u/_Daimon_ v 1.0. '
 		'Url: https://praw.readthedocs.org/en/latest/'
@@ -34,47 +35,47 @@ def main():
 	feed.init()
 
 	for submission in subreddit.get_hot(limit=20):
-		title = submission.title
-		post_id = submission.id
-		score = submission.score
-		text = submission.selftext
-
-
-		log("%s : %d : %s" %(title, score, get_url(post_id)))
-		if score < HIGH_SCORE:
-			log("*** LOW SCORE")
-
-			continue
-
-		if id_in_db(post_id):
-			log("*** ALREADY IN DATABASE")
-			continue
-
-		twitter_text = format_twitter_all(post_id, title, submission.selftext)
-
-		if config.POST_TO_TWITTER and len(twitter_text) < TWITTER_LIMIT :
-			status = tweet(twitter_text)
-
-			if status:
-				save_in_db(post_id, get_url(post_id))
-
-		else:
-			url = get_long_url(post_id)
-			https_url = "https://" + url
-			if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed(https_url):
-				
-				if config.POST_TO_RSS:
-					feed.add_entry(title, https_url, text)
-					print "NEW RSS FEED ===============\n" + title + " - " + https_url
-				
-				if config.POST_TO_FB:
-					publish_facebook(title, text, url)
-					print "NEW FACEBOOK POST ===============\n" + title + " - " + url
+		analyze_and_post(submission)
 
 	if not TESTING:
 		DB.commit()
 
 	feed.close()
+
+def analyze_and_post(submission):
+	title = submission.title
+	post_id = submission.id
+	score = submission.score
+	text = submission.selftext
+
+	log("%s : %d : %s" %(title, score, get_url(post_id)))
+	if score < HIGH_SCORE:
+		log("*** LOW SCORE ***")
+		return
+
+	if id_in_db(post_id):
+		log("*** ALREADY IN DATABASE ***")
+		return
+
+	twitter_text = format_twitter_all(post_id, title, text)
+
+	if config.POST_TO_TWITTER and len(twitter_text) < TWITTER_LIMIT :
+		status = tweet(twitter_text)
+		if status:
+			save_in_db(post_id, get_url(post_id))
+
+	else:
+		url = get_long_url(post_id)
+		https_url = "https://" + url
+		if score >= LONG_TEXT_MIN_SCORE and not feed.item_in_feed(https_url):
+
+			if config.POST_TO_RSS:
+				feed.add_entry(title, https_url, text)
+				print "NEW RSS FEED ===============\n" + title + " - " + https_url
+
+			if config.POST_TO_FB:
+				publish_facebook(title, text, url)
+				print "NEW FACEBOOK POST ===============\n" + title + " - " + url
 
 
 def tweet(tweet_text):
@@ -119,6 +120,11 @@ def save_in_db(post_id, post_url):
 
 
 
+def setup():
+	import sys
+
+	reload(sys)
+	sys.setdefaultencoding('utf8')
 
 def log(msg):
 	if LOGGER:
